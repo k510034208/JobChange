@@ -87,66 +87,19 @@
             <textarea class="form-control" name="analysis_memo" rows="15"><%= analyze_memo %></textarea>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" @ckick='updateContent(<% comp.id %>, slection_memo)'>更新</button>
+            <button type="button" class="btn btn-primary" @click='updateContent(<%= comp.id %>, selection_memo)'>更新</button>
             <button type="button" class="btn btn-primary" data-dismiss="modal">閉じる</button>
           </div>
         </div>
       </div>
     </div>
-
-
-    <script src="../javascripts/jquery.min.js"></script>
-    <script src="../javascripts/bootstrap.bundle.min.js"></script>
   </div>
 
-  <script>
+  <script src="../javascripts/jquery.min.js"></script>
+  <script src="../javascripts/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
+  <script src="../javascripts/company_vue.js"></script>
 
-    var app = new Vue({
-      el: '#app',
-      data: {
-        analysis_memo = '',
-        selection_memo = '',
-      },
-      methods: {
-        updateContent: function (comp_id, type){
-
-          var conten;
-
-          // 更新内容の取得
-          if (type == 'analysis_memo'){
-            content = this.analysis_memo;
-
-          } else if(type == 'selection_memo'){
-            content = this.selection_memo
-          }
-
-          // APIへの更新リクエスト
-          fetch(`/api/v1/company/update`, {
-            method: 'post',
-            mode: 'same-origin',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              comp_id: comp_id,
-              content: content,
-              type:type,
-            })
-          })
-            .then(res => {
-              return res.json();
-            })
-            .then(json => {
-
-              if (json.result == 'errror') {
-                return;
-              }
-
-              return;
-            });
-        }
-      },
-    });
-
-  </script>
 </body>
 
 </html>
