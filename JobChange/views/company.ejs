@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <title>JobChange</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
+  <link rel="stylesheet" href="/stylesheets/styles.min.css">
+  </head>
+
+<body>
+  <header>
+    <%- include('./common/header') %>    
+  </header>
+
+  <div id="app">
+    <div class="container" style="padding: 10px 0px;padding-top: 30px;">
+      <h2><%= comp.c_name %></h2>
+    </div>
+    <div class="container" style="padding: 10px 0px;padding-top: 0px;">
+      <h6><a href="<%= comp.url %>"><%= comp.url %></a></h6>
+    </div>
+    <div class="container" style="padding: 10px 0px;padding-top: 20px;">
+      <h4>募集内容</h4>
+      <div style="padding: 0px 10px;">
+        <p><%= comp.application_requirement %></p>
+      </div>
+    </div>
+    <div class="container" style="padding: 10px 0px;padding-top: 15px;">
+      <h4>
+        分析メモ 
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal1" style="margin-left: 10px;">編集</button>
+      </h4>
+      <div style="padding: 10px 10px;">
+        <%- analyze_memo %>
+      </div>
+    </div>
+    <div class="container" style="padding: 10px 0px;padding-top: 15px;">
+      <h4>選考状況：<%= comp.selection_status %></h4>
+    </div>
+
+    <div class="container" style="padding: 10px 0px;padding-top: 15px;">
+      <h4>
+        選考メモ
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal2"
+          style="margin-left: 10px;">編集</button>
+      </h4>
+      <div style="padding: 10px 10px;">
+        <%- selection_memo %>
+      </div>
+    </div>
+
+
+    <!-- 分析メモのモーダル -->
+    <div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="label1" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="label1">分析メモの編集</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <textarea name="analysis_memo" cols="60" rows="5"><%= analyze_memo %></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 選考メモのモーダル -->
+    <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="label1" aria-hidden="true">
+      <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title" id="label1">選考メモの編集</h4>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <textarea class="form-control" name="analysis_memo" rows="15"><%= analyze_memo %></textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" @ckick='updateContent(<% comp.id %>, slection_memo)'>更新</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal">閉じる</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <script src="../javascripts/jquery.min.js"></script>
+    <script src="../javascripts/bootstrap.bundle.min.js"></script>
+  </div>
+
+  <script>
+
+    var app = new Vue({
+      el: '#app',
+      data: {
+        analysis_memo = '',
+        selection_memo = '',
+      },
+      methods: {
+        updateContent: function (comp_id, type){
+
+          var conten;
+
+          // 更新内容の取得
+          if (type == 'analysis_memo'){
+            content = this.analysis_memo;
+
+          } else if(type == 'selection_memo'){
+            content = this.selection_memo
+          }
+
+          // APIへの更新リクエスト
+          fetch(`/api/v1/company/update`, {
+            method: 'post',
+            mode: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              comp_id: comp_id,
+              content: content,
+              type:type,
+            })
+          })
+            .then(res => {
+              return res.json();
+            })
+            .then(json => {
+
+              if (json.result == 'errror') {
+                return;
+              }
+
+              return;
+            });
+        }
+      },
+    });
+
+  </script>
+</body>
+
+</html>
