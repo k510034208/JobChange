@@ -25,7 +25,6 @@ router.get('/company', async function (req, res, next) {
   // 企業の取得
   var comp = await db.Company.findByPk(comp_id);
 
-  console.log('s')
   res.render('company', {
     comp: comp,
     analyze_memo: markdown.render(comp.analysis_memo),

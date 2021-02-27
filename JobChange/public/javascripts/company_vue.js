@@ -1,13 +1,16 @@
 var app = new Vue({
   el: '#app',
   data: {
-    analysis_memo : '',
-    selection_memo : 'test',
+    analysis_memo : <%= analyze_memo %>,
+    selection_memo : <%= selection_memo %>,
   },
   methods: {
     updateContent: function (comp_id, type){
 
       var content;
+
+      console.log(`content: ${content}`);
+      console.log(`type: ${type}`);
 
       // 更新内容の取得
       if (type == 'analysis_memo'){
@@ -16,6 +19,9 @@ var app = new Vue({
       } else if(type == 'selection_memo'){
         content = this.selection_memo
       }
+
+      console.log(`content: ${content}`);
+      console.log(`type: ${type}`);
 
       // APIへの更新リクエスト
       fetch(`/api/v1/company/update`, {

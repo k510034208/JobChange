@@ -18,79 +18,61 @@
   <div id="app">
     <div class="container" style="padding: 10px 0px;padding-top: 30px;">
       <h2><%= comp.c_name %></h2>
+      <h6>(<a v-bind:href="url" target="_blank" rel="noopener noreferrer">HP</a>)</h6>
     </div>
     <div class="container" style="padding: 10px 0px;padding-top: 0px;">
-      <h6><a href="<%= comp.url %>"><%= comp.url %></a></h6>
+      <input type="text" v-model:value="url">
+        <button type="button" class="btn btn-primary" @click='updateContent("url")' style="margin-left: 10px;">更新</button>
     </div>
+
     <div class="container" style="padding: 10px 0px;padding-top: 20px;">
       <h4>募集内容</h4>
+        <button type="button" class="btn btn-primary" @click='updateContent("application_requirement")' style="margin-left: 10px;">更新</button>
       <div style="padding: 0px 10px;">
-        <p><%= comp.application_requirement %></p>
+        <textarea rows="10" v-model:value="application_requirement" style="width: 90%;"></textarea>
       </div>
     </div>
+
     <div class="container" style="padding: 10px 0px;padding-top: 15px;">
       <h4>
         分析メモ 
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal1" style="margin-left: 10px;">編集</button>
+        <button type="button" class="btn btn-primary" @click='updateContent("analysis_memo")' style="margin-left: 10px;">更新</button>
       </h4>
       <div style="padding: 10px 10px;">
-        <%- analyze_memo %>
+        <textarea rows="10" v-model:value="analysis_memo" style="width: 90%;"></textarea>
       </div>
     </div>
+
     <div class="container" style="padding: 10px 0px;padding-top: 15px;">
-      <h4>選考状況：<%= comp.selection_status %></h4>
+      <h4>選考状況：
+        <input type="text" v-model:value="selection_status">
+        <button type="button" class="btn btn-primary" @click='updateContent("selection_status")' style="margin-left: 10px;">更新</button>
+      </h4>
+    </div>
+
+    <div class="container" style="padding: 10px 0px;padding-top: 15px;">
+      <h6>次回選考日（期日）：
+        <input type="text" v-model:value="selection_next_date">
+        <button type="button" class="btn btn-primary" @click='updateContent("selection_next_date")'
+          style="margin-left: 10px;">更新</button>
+      </h6>
+    </div>
+
+    <div class="container" style="padding: 10px 0px;padding-top: 15px;">
+      <h6>次回選考内容：
+        <input type="text" v-model:value="selection_next_content">
+        <button type="button" class="btn btn-primary" @click='updateContent("selection_next_content")'
+          style="margin-left: 10px;">更新</button>
+      </h6>
     </div>
 
     <div class="container" style="padding: 10px 0px;padding-top: 15px;">
       <h4>
         選考メモ
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal2"
-          style="margin-left: 10px;">編集</button>
+        <button type="button" class="btn btn-primary" @click='updateContent("selection_memo")' style="margin-left: 10px;">更新</button>
       </h4>
       <div style="padding: 10px 10px;">
-        <%- selection_memo %>
-      </div>
-    </div>
-
-
-    <!-- 分析メモのモーダル -->
-    <div class="modal fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="label1" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title" id="label1">分析メモの編集</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <textarea name="analysis_memo" cols="60" rows="5"><%= analyze_memo %></textarea>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-dismiss="modal">OK</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 選考メモのモーダル -->
-    <div class="modal fade" id="modal2" tabindex="-1" role="dialog" aria-labelledby="label1" aria-hidden="true">
-      <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title" id="label1">選考メモの編集</h4>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <textarea class="form-control" name="analysis_memo" rows="15"><%= analyze_memo %></textarea>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" @click='updateContent(<%= comp.id %>, selection_memo)'>更新</button>
-            <button type="button" class="btn btn-primary" data-dismiss="modal">閉じる</button>
-          </div>
-        </div>
+        <textarea rows="10" style="width: 90%;" v-model:value="selection_memo"></textarea>
       </div>
     </div>
   </div>
@@ -98,8 +80,81 @@
   <script src="../javascripts/jquery.min.js"></script>
   <script src="../javascripts/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
-  <script src="../javascripts/company_vue.js"></script>
 
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        id : `<%= comp.id %>`,
+        url: `<%= comp.url %>`,
+        application_requirement: `<%- comp.application_requirement %>`,
+        analysis_memo: `<%- comp.analysis_memo %>`,
+        selection_status: `<%= comp.selection_status %>`,
+        selection_next_date: `<%= comp.selection_next_date %>`,
+        selection_next_content: `<%= comp.selection_next_content %>`,
+        selection_memo: `<%= comp.selection_memo %>`,
+      },
+      methods: {
+        updateContent: function (item) {
+
+          console.log(`compid : ${ this.id }`);
+          console.log(`update : ${ item }`);
+
+          comp_id = this.id ;
+          var content;
+
+          // 更新内容の取得
+          if(item == 'url'){
+            content = this.url;
+
+          } else if (item == 'application_requirement') {
+            content = this.application_requirement;
+          
+          } else if (item == 'analysis_memo') {
+            content = this.analysis_memo;
+
+          } else if (item == 'selection_status') {
+            content = this.selection_status
+
+          } else if (item == 'selection_next_date') {
+            content = this.selection_next_date
+          
+          } else if (item == 'selection_next_content') {
+            content = this.selection_next_content
+          
+          } else if (item == 'selection_memo') {
+            content = this.selection_memo
+          }
+
+          // APIへの更新リクエスト
+          fetch(`/api/v1/company/update`, {
+            method: 'post',
+            mode: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              comp_id: comp_id,
+              content: content,
+              item: item,
+            })
+          })
+          .then(res => {
+            return res.json();
+          })
+          .then(json => {
+
+            if (json.result == 'errror') {
+              alert('update error.')
+              return;
+            }
+
+            alert('update success.')            
+            window.location.reload();
+            return;
+          });
+        }
+      },
+    });
+  </script>
 </body>
 
 </html>

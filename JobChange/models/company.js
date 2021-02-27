@@ -19,13 +19,15 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     url: DataTypes.STRING,
-    application_requirement: DataTypes.TEXT,
-    analysis_memo: DataTypes.TEXT,
+    application_requirement: DataTypes.STRING(65535),
+    analysis_memo: DataTypes.STRING(65535),
     selection_status: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    selection_memo: DataTypes.TEXT
+    selection_next_date: DataTypes.STRING,
+    selection_next_content: DataTypes.STRING,
+    selection_memo: DataTypes.STRING(65535)
   }, {
     sequelize,
     modelName: 'Company',
