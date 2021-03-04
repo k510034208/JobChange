@@ -4,9 +4,17 @@ var db = require('../models/index');
 var passport = require('passport'), LocalStrategy = require('passport-local').Strategy;
 var tools = require('../modules/tools');
 
+//CSRFミドルウェアを生成する
+var csrf = require('csrf');
+var tokens = new csrf();
+
 /* GET home page. 
  */
 router.get('/', async function (req, res, next) {
+
+  // CSRF対策
+  // トークン生成
+  tools.createCsrfToken(req, res);
 
   res.render('index', {
     message: req.flash('error'),
@@ -26,6 +34,11 @@ router.get('/login', async function (req, res, next) {
 /* POST login page. 
  */
 router.post('/login', async function (req, res, next) {
+
+  // CSRF対策
+  if (!tools.checkCsrf(req)) {
+    return next("err"); 
+  }
 
   // 不正アクセス対策
   try {

@@ -7,29 +7,30 @@ var router = express.Router();
 /* CREATE /api/vX/create */
 router.post('/create', async function (req, res, next) {
 
-  // XSS対策
-  if (!tools.sanitizeString(req.body)) {
-    // エラーレスポンス
-    res.json({
-      result: 'error',
-      content: '',
-      item:''
-    });
-    return;    
-  }
-  
   // ログインチェック
   if (!tools.checkLoginstatus(req)) {
 
     // エラーレスポンス
-    res.json({
-      result: 'error',
-      content: content,
-      item:item
-    });
-    return;  
+    responseCreateApi(res, 'error', '')
+    return;
   }
 
+  // CSRF対策
+  if (!tools.checkCsrf(req)) {
+    // エラーレスポンス
+    responseCreateApi(res, 'error', '')
+    return;
+ 
+  }
+  
+  // XSS対策
+  if (!tools.sanitizeString(req.body)) {
+    // エラーレスポンス
+    responseCreateApi(res, 'error', '')
+    return;
+  }
+  
+ 
   var comp;
 
   try {
@@ -57,22 +58,14 @@ router.post('/create', async function (req, res, next) {
     console.log(err);
 
     // エラーレスポンス
-    res.json({
-      result: 'error',
-      content: content,
-      item:item
-    });
-    return;    
+    responseCreateApi(res, 'error', comp.id)
+    return;      
   }
 
   if (!comp.id) {
 
     // エラーレスポンス
-    res.json({
-      result: 'error',
-      content: content,
-      item:item
-    });
+    responseCreateApi(res, 'error', comp.id)
     return;    
   }
 
@@ -81,21 +74,13 @@ router.post('/create', async function (req, res, next) {
     result: 'success',
     comp_id: comp.id
   });
+  responseCreateApi(res, 'success', comp.id)
 });
+
+
 
 /* DELETE /api/vX/delete */
 router.post('/delete', async function (req, res, next) {
-
-  // XSS対策
-  if (!tools.sanitizeString(req.body)) {
-    // エラーレスポンス
-    res.json({
-      result: 'error',
-      content: '',
-      item:''
-    });
-    return;    
-  }
 
   // パラメータの受け取り
   var comp_id = req.body.comp_id;
@@ -104,12 +89,22 @@ router.post('/delete', async function (req, res, next) {
   if (!tools.checkLoginstatus(req) || !tools.checkUserid(req,comp_id)) {
 
     // エラーレスポンス
-    res.json({
-      result: 'error',
-      content: content,
-      item:item
-    });
-    return;  
+    responseDeleteApi(res, 'error', comp_id)
+    return;
+  }
+
+  // CSRF対策
+  if (!tools.checkCsrf(req)) {
+    // エラーレスポンス
+    responseDeleteApi(res, 'error', comp_id)
+    return;
+  }
+
+  // XSS対策
+  if (!tools.sanitizeString(req.body)) {
+    // エラーレスポンス
+    responseDeleteApi(res, 'error', comp_id)
+    return;
   }
 
   try {
@@ -123,19 +118,13 @@ router.post('/delete', async function (req, res, next) {
   } catch (err) {
 
     console.log(err);
-    res.json({
-      result: 'error',
-      content: content,
-      item:item
-    });
+    responseDeleteApi(res, 'error', comp_id)
     return;
-  }
+    }
 
   // 正常レスポンス
-  res.json({
-    result: 'success',
-    comp_id: comp_id
-  });  
+  responseDeleteApi(res, 'success', comp_id)
+  return;
 });
 
 
@@ -144,12 +133,8 @@ router.post('/update', async function (req, res, next) {
 
   if (!tools.sanitizeString(req.body)) {
     // エラーレスポンス
-    res.json({
-      result: 'error',
-      content: '',
-      item:''
-    });
-    return;    
+    responseUpdateApi(res, 'error', '', '');
+    return;
   }
 
   // パラメータの受け取り
@@ -161,12 +146,15 @@ router.post('/update', async function (req, res, next) {
   if (!tools.checkLoginstatus(req) || !tools.checkUserid(req,comp_id)) {
 
     // エラーレスポンス
-    res.json({
-      result: 'error',
-      content: content,
-      item:item
-    });
-    return;  
+    responseUpdateApi(res, 'error', content, item);
+    return;
+  }
+
+  // CSRF対策
+  if (!tools.checkCsrf(req)) {
+    // エラーレスポンス
+    responseUpdateApi(res, 'error', content, item);
+    return;
   }
 
   var comp;
@@ -285,29 +273,43 @@ router.post('/update', async function (req, res, next) {
 
     console.log(err);
 
-    res.json({
-      result: 'error',
-      content: content,
-      item:item
-    });
+    responseUpdateApi(res, 'error', content, item);
     return;
   }
 
   if (!comp) {
-
-    res.json({
-      result: 'error',
-      content: content,
-      item:item
-    });
+    responseUpdateApi(res, 'error', content, item);
+    return;
   }
 
   // 正常レスポンス
+  responseUpdateApi(res,'success', content, item);
+});
+
+
+// CREATE APIのレスポンス用の関数
+function responseCreateApi(res, result, comp_id) {
   res.json({
-    result: 'success',
+    result: result,
+    comp_id:comp_id
+  })
+}
+
+// DELETE APIのレスポンス用の関数
+function responseDeleteApi(res, result, comp_id) {
+  res.json({
+    result: result,
+    comp_id:comp_id
+  })
+}
+
+// UPDATE APIのレスポンス用の関数
+function responseUpdateApi(res, result, content, item) {
+  res.json({
+    result: result,
     content: content,
     item:item
   });
-});
+}
 
 module.exports = router;

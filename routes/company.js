@@ -16,6 +16,11 @@ router.get('/', async function (req, res, next) {
     res.redirect('/');
     return;
   }
+
+  // CSRF対策
+  if (!tools.checkCsrf(req)) {
+    return next("err"); 
+  }
   
   // 所属チェック(権限がない場合はTOP画面に遷移させる)
   if (!tools.checkUserid(req,comp_id)) {

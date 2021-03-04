@@ -1,5 +1,8 @@
 const db = require('../models/index');
 const crypto = require('crypto');
+var csrf = require('csrf');
+var tokens = new csrf();
+
 
 
 // ログインチェック
@@ -54,5 +57,32 @@ exports.sanitizeString = function(stringObject){
     }
   }
 
+  return true;
+}
+
+// CSRFtoken 生成
+exports.createCsrfToken = function (req, res) {
+  var secret = tokens.secretSync();
+  var token = tokens.create(secret);
+
+  // 秘密文字をセッションに保存する
+  req.session._csrf = secret;
+  // トークンをCookieに保存する
+  res.cookie('_csrf', token);
+
+  return
+}
+
+// CSRFチェック処理
+exports.checkCsrf = function (req) {
+  
+  var secret = req.session._csrf;
+  var token = req.cookies._csrf;
+
+  console.log(tokens.verify(secret, token));
+  // トークンチェックする
+  if (!tokens.verify(secret, token)) {
+    return false;
+  }
   return true;
 }

@@ -7,6 +7,7 @@ var session = require('express-session');
 var passport = require('passport'), LocalStrategy = require('passport-local').Strategy;
 var flash = require('connect-flash');
 var helmet = require('helmet')
+const csrf = require('csurf');
 
 var tools = require('./modules/tools')
 var db = require('./models/index');
