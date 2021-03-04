@@ -30,7 +30,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(flash());
-app.use(helmet())
+app.use(helmet({
+  contentSecurityPolicy: false,
+})
+);
 
 // sessionの設定
 var session_opt = {
@@ -39,9 +42,9 @@ var session_opt = {
   saveUninitialized: false,
   cookie: {
     maxAge: 60 * 60 * 1000,
-    secure: true,
-    httpOnly: true,
-    domain: 'jobchange.herokuapp.com',
+    //secure: true,
+    //httpOnly: true,
+    //domain: 'jobchange.herokuapp.com',
   }
 };
 app.use(session(session_opt));
