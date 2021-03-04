@@ -70,10 +70,6 @@ router.post('/create', async function (req, res, next) {
   }
 
   // 正常レスポンス
-  res.json({
-    result: 'success',
-    comp_id: comp.id
-  });
   responseCreateApi(res, 'success', comp.id)
 });
 
