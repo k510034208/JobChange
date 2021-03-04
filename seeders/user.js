@@ -6,12 +6,12 @@ module.exports = {
     return queryInterface.bulkInsert('Users', [
       {
         id: 1,
-        user_name: "a",
+        user_name: "Production001",
         password: tools.hashSha256('a'),
       },
       {
         id: 2,
-        user_name: "b",
+        user_name: "Production002",
         password: tools.hashSha256('b'),
       }
     ]);
