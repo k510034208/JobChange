@@ -12,7 +12,8 @@ module.exports = {
         selection_status: "書類通過",
         selection_next_date: "2021/01/31",
         selection_next_content: "１次面談",
-        selection_memo: "・PMとしての経験を活用\n・新規事業創出への挑戦をアピール"
+        selection_memo: "・PMとしての経験を活用\n・新規事業創出への挑戦をアピール",
+        user_id:1
       },
       {
         id: 2,
@@ -23,7 +24,8 @@ module.exports = {
         selection_status: "書類通過",
         selection_next_date: "2021/01/31",
         selection_next_content: "最終面談",
-        selection_memo: "・PMとしての経験を活用\n・新規事業創出への挑戦をアピール"
+        selection_memo: "・PMとしての経験を活用\n・新規事業創出への挑戦をアピール",
+        user_id:2
       },
       {
         id: 3,
@@ -34,7 +36,8 @@ module.exports = {
         selection_status: "書類通過",
         selection_next_date: "2021/01/31",
         selection_next_content: "書類選考",
-        selection_memo: "・PMとしての経験を活用\n・新規事業創出への挑戦をアピール"
+        selection_memo: "・PMとしての経験を活用\n・新規事業創出への挑戦をアピール",
+        user_id:1
       },
     ]);
   },

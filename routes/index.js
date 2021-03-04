@@ -1,35 +1,129 @@
 var express = require('express');
 var router = express.Router();
 var db = require('../models/index');
-var MarkdownIt = require('markdown-it');
-var markdown = new MarkdownIt();
+var passport = require('passport'), LocalStrategy = require('passport-local').Strategy;
+var tools = require('../modules/tools');
 
-
-/* GET home page. */
+/* GET home page. 
+ */
 router.get('/', async function (req, res, next) {
-  
-  // 企業リストの取得
-  var comp_list = await db.Company.findAll();
 
-  res.render('index', { comp_list:comp_list });
+  res.render('index', {
+    message: req.flash('error'),
+    form: {
+      username:''
+    }
+  });
 });
 
-/* 
- * GET /company/id=xx 
+/* GET home page. 
  */
-router.get('/company', async function (req, res, next) {
+router.get('/login', async function (req, res, next) {
+
+  res.redirect('/');
+});
+
+/* POST login page. 
+ */
+router.post('/login', async function (req, res, next) {
+
+  // 不正アクセス対策
+  try {
+    var user = await db.User.findOne({
+      where: {
+        user_name: req.body.username
+      }
+    });
+
+    if (user.fail_count >= 5) {
+      res.render('index', {
+        message: 'アカウントロック',
+        form: {
+          username: req.body.username,
+        }
+      });
+      return;
+    }
+
+  } catch (err) {
+    res.render('index', {
+      message: 'エラー',
+      form: {
+        username: req.body.username,
+      }
+    });    
+    return;
+  }
+
+  passport.authenticate('local', async function (err, user, info) {
+    
+    if (err) { return next(err); }
+
+    if (!user) {
+
+      // fail_countのカウントアップ      
+      try {
+        db.sequelize.transaction(async (t) => {
+
+          // countup
+          await db.User.increment('fail_count', {
+            where: {
+              user_name : req.body.username
+            },
+          }, { transaction: t });
+
+        });
+
+      } catch (err) {
+        res.render('index', {
+          message: 'エラー',
+          form: {
+            username: req.body.username,
+          }
+        });    
+        return;
+      }
+    
+      res.render('index', {
+        message: '認証エラー',
+        form: {
+          username: req.body.username,
+        }
+      });
+      return;
+    }
+
+    // ログイン成功
+    req.logIn(user, function (err) {
+      if (err) { return next(err); }
+    
+        // fail_countのクリア
+        try {
+          db.sequelize.transaction(async (t) => {
   
-  // リクエストパラメータの取得
-  comp_id = req.query.id;
-
-  // 企業の取得
-  var comp = await db.Company.findByPk(comp_id);
-
-  res.render('company', {
-    comp: comp,
-    analyze_memo: markdown.render(comp.analysis_memo),
-    selection_memo: markdown.render(comp.selection_memo),
-  });
+            await db.User.update({
+              fail_count : 0
+            }, {
+              where: {
+                user_name : req.body.username
+              },
+            }, { transaction: t });
+          });
+  
+        } catch (err) {
+          res.render('index', {
+            message: 'エラー',
+            form: {
+              username: req.body.username,
+            }
+          });    
+          return;
+        }
+       
+      res.redirect('/top');
+      return;
+    });
+  })(req,res,next)
 });
 
 module.exports = router;

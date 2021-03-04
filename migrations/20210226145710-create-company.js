@@ -34,6 +34,9 @@ module.exports = {
       selection_memo: {
         type: Sequelize.STRING(65535)
       },
+      user_id: {
+        type:Sequelize.INTEGER,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

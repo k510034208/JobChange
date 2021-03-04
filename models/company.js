@@ -17,17 +17,56 @@ module.exports = (sequelize, DataTypes) => {
     c_name: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        notNull: true,
+        len: [ 1, 255 ],
+      }
     },
-    url: DataTypes.STRING,
-    application_requirement: DataTypes.STRING(65535),
+    url: {
+      type: DataTypes.STRING,
+      validate: {
+        isUrl: true,
+        len: [ 1, 255 ],
+      },
+    },
+    application_requirement: {
+      type: DataTypes.STRING(65535),
+      validate: {
+        len: [ 1, 10000 ],
+      }
+    },
     analysis_memo: DataTypes.STRING(65535),
     selection_status: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        len: [ 1, 10000 ],
+      }
     },
-    selection_next_date: DataTypes.STRING,
-    selection_next_content: DataTypes.STRING,
-    selection_memo: DataTypes.STRING(65535)
+    selection_next_date: {
+      type: DataTypes.STRING,
+      validate: {
+        len: [ 1, 32 ],
+      },
+    },
+    selection_next_content: {
+      type: DataTypes.STRING,
+      validate: {
+        len: [ 1, 100 ],
+      },
+    },
+    selection_memo: {
+      type: DataTypes.STRING(65535),
+      validate: {
+        len: [ 1, 10000 ],
+      },
+    },
+    user_id: {
+      type: DataTypes.INTEGER,
+      validate: {
+        isInt: true
+      }
+    }
   }, {
     sequelize,
     modelName: 'Company',

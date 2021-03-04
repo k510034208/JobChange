@@ -3,18 +3,27 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "snyk test"
   },
   "dependencies": {
+    "connect-flash": "^0.1.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
-    "ejs": "~2.6.1",
+    "ejs": "^3.1.6",
     "express": "~4.16.1",
+    "express-session": "^1.17.1",
+    "helmet": "^4.4.1",
     "http-errors": "~1.6.3",
     "markdown-it": "^12.0.4",
     "morgan": "~1.9.1",
     "mysql2": "^2.2.5",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
     "sequelize": "^6.5.0",
     "sequelize-cli": "^6.2.0"
+  },
+  "devDependencies": {
+    "snyk": "^1.467.0"
   }
 }

@@ -150,8 +150,11 @@
           })
           .then(json => {
 
-            if (json.result == 'errror') {
+            console.log(json.result);
+
+            if (json.result == 'error') {
               alert('update error.')
+              window.location.reload();
               return;
             }
 

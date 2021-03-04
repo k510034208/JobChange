@@ -3,9 +3,20 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var session = require('express-session');
+var passport = require('passport'), LocalStrategy = require('passport-local').Strategy;
+var flash = require('connect-flash');
+var helmet = require('helmet')
+
+var tools = require('./modules/tools')
+var db = require('./models/index');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var topRouter = require('./routes/top');
+var companyRouter = require('./routes/company');
+
+// API
+var companyApi = require('./api/v1/company');
 
 var app = express();
 
@@ -18,11 +29,63 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(flash());
+app.use(helmet())
 
-// API
-var companyApi = require('./api/v1/company');
+// sessionの設定
+var session_opt = {
+  secret: 'seccone',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 60 * 60 * 1000,
+    secure: true,
+    httpOnly: true,
+    domain: 'jobchange.herokuapp.com',
+  }
+};
+app.use(session(session_opt));
+
+// passportの設定
+app.use(passport.initialize());
+app.use(passport.session());
+
+// passportの設定
+passport.use(new LocalStrategy(
+  async function (username, password, done) {
+    
+    var user;
+    try {
+      // DBから認証情報の取得
+      user = await db.User.findOne({
+        where: { user_name: username }
+      });
+      
+      if (!user || user.password !== tools.hashSha256(password)) {
+        return done(null, false, { message: '認証エラー' });
+      }
+      
+      return done(null, user);
+    
+    } catch (err) {
+      return done(err);
+    }
+  }
+));
+
+passport.serializeUser(function (user, done) {
+  console.log('Serialize ...')
+  done(null, user.id);
+});
+
+passport.deserializeUser(async function (userid, done) {
+  console.log('Deserialize ...')
+  done(null, userid);
+});
 
 app.use('/', indexRouter);
+app.use('/top', topRouter);
+app.use('/company', companyRouter);
 
 // API用のルーティング
 app.use('/api/v1/company/', companyApi);
@@ -31,6 +94,8 @@ app.use('/api/v1/company/', companyApi);
 app.use(function(req, res, next) {
   next(createError(404));
 });
+
+
 
 // error handler
 app.use(function(err, req, res, next) {

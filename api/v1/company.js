@@ -1,10 +1,34 @@
 var express = require('express');
 const db = require('../../models/index');
+var tools = require('../../modules/tools');
 
 var router = express.Router();
 
 /* CREATE /api/vX/create */
 router.post('/create', async function (req, res, next) {
+
+  // XSS対策
+  if (!tools.sanitizeString(req.body)) {
+    // エラーレスポンス
+    res.json({
+      result: 'error',
+      content: '',
+      item:''
+    });
+    return;    
+  }
+  
+  // ログインチェック
+  if (!tools.checkLoginstatus(req)) {
+
+    // エラーレスポンス
+    res.json({
+      result: 'error',
+      content: content,
+      item:item
+    });
+    return;  
+  }
 
   var comp;
 
@@ -21,7 +45,8 @@ router.post('/create', async function (req, res, next) {
           selection_status: "未入力",
           selection_next_date: "次回選考日",
           selection_next_content: "次回選考内容",
-          selection_memo: "選考に関するメモ、戦略"
+          selection_memo: "選考に関するメモ、戦略",
+          user_id:req.user,
         }, { transaction: t });
         
         console.log(comp);
@@ -61,8 +86,31 @@ router.post('/create', async function (req, res, next) {
 /* DELETE /api/vX/delete */
 router.post('/delete', async function (req, res, next) {
 
+  // XSS対策
+  if (!tools.sanitizeString(req.body)) {
+    // エラーレスポンス
+    res.json({
+      result: 'error',
+      content: '',
+      item:''
+    });
+    return;    
+  }
+
   // パラメータの受け取り
   var comp_id = req.body.comp_id;
+
+  // ログインチェック・所属チェック
+  if (!tools.checkLoginstatus(req) || !tools.checkUserid(req,comp_id)) {
+
+    // エラーレスポンス
+    res.json({
+      result: 'error',
+      content: content,
+      item:item
+    });
+    return;  
+  }
 
   try {
     // DBトランザクション開始
@@ -90,13 +138,36 @@ router.post('/delete', async function (req, res, next) {
   });  
 });
 
+
 /* UPDATE /api/vX/update */
 router.post('/update', async function (req, res, next) {
+
+  if (!tools.sanitizeString(req.body)) {
+    // エラーレスポンス
+    res.json({
+      result: 'error',
+      content: '',
+      item:''
+    });
+    return;    
+  }
 
   // パラメータの受け取り
   var comp_id = req.body.comp_id;
   var content = req.body.content;
   var item = req.body.item;
+
+  // ログインチェック・所属チェック
+  if (!tools.checkLoginstatus(req) || !tools.checkUserid(req,comp_id)) {
+
+    // エラーレスポンス
+    res.json({
+      result: 'error',
+      content: content,
+      item:item
+    });
+    return;  
+  }
 
   var comp;
 
