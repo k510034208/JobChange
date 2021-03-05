@@ -36,23 +36,27 @@ app.use(helmet({
 })
 );
 
-var secure = {};
+var session_opt;
 if (process.env.NODE_ENV == 'procuction') {
-  secure = {
-    secure: true,
-    httpOnly: true,
-    domain: 'jobchange.herokuapp.com',
-  }
-}
-
-// sessionの設定
 var session_opt = {
   secret: 'seccone',
   resave: false,
   saveUninitialized: false,
   cookie: {
     maxAge: 60 * 60 * 1000,
-    secure
+    secure: true,
+    httpOnly: true,
+    domain: 'jobchange.herokuapp.com',
+  }
+};
+
+// sessionの設定
+session_opt = {
+  secret: 'seccone',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 60 * 60 * 1000,
   }
 };
 app.use(session(session_opt));
