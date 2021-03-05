@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
   <link rel="stylesheet" href="/stylesheets/styles.min.css">
-  <link rel="stylesheet" href="/stylesheets/styles.css">
   </head>
 
 <body>
@@ -275,8 +274,8 @@
           }
 
           // APIへの更新リクエスト
-          fetch(`/api/v1/company/update`, {
-            method: 'post',
+          fetch(`/api/v1/company`, {
+            method: 'put',
             mode: 'same-origin',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

@@ -4,8 +4,8 @@ var tools = require('../../modules/tools');
 
 var router = express.Router();
 
-/* CREATE /api/vX/create */
-router.post('/create', async function (req, res, next) {
+/* CREATE /api/vX/company */
+router.post('/', async function (req, res, next) {
 
   // ログインチェック
   if (!tools.checkLoginstatus(req)) {
@@ -75,8 +75,8 @@ router.post('/create', async function (req, res, next) {
 
 
 
-/* DELETE /api/vX/delete */
-router.post('/delete', async function (req, res, next) {
+/* DELETE /api/vX/company */
+router.delete('/', async function (req, res, next) {
 
   // パラメータの受け取り
   var comp_id = req.body.comp_id;
@@ -124,8 +124,8 @@ router.post('/delete', async function (req, res, next) {
 });
 
 
-/* UPDATE /api/vX/update */
-router.post('/update', async function (req, res, next) {
+/* UPDATE /api/vX/company */
+router.put('/', async function (req, res, next) {
 
   if (!tools.sanitizeString(req.body)) {
     // エラーレスポンス
