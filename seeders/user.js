@@ -7,12 +7,12 @@ module.exports = {
       {
         id: 1,
         user_name: "Production001",
-        password: tools.hashSha256('a'),
+        password: tools.hashSha256('001jcproduction'),
       },
       {
         id: 2,
         user_name: "Production002",
-        password: tools.hashSha256('b'),
+        password: tools.hashSha256('001jcproduction'),
       }
     ]);
   },
