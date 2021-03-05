@@ -19,7 +19,7 @@ router.get('/', async function (req, res, next) {
 
   // CSRF対策
   if (!tools.checkCsrf(req)) {
-    return next("err"); 
+    return next("error"); 
   }
   
   // 所属チェック(権限がない場合はTOP画面に遷移させる)
@@ -37,7 +37,10 @@ router.get('/', async function (req, res, next) {
     },
   });
 
-
+  if (!comp) {
+    res.status(404).render('error');
+    return;
+  }
 
   res.render('company', {
     comp: comp,

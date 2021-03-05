@@ -19,20 +19,20 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         notNull: true,
-        len: [ 1, 255 ],
+        len: [ 1, 100 ],
       }
     },
     url: {
       type: DataTypes.STRING,
       validate: {
         isUrl: true,
-        len: [ 1, 255 ],
+        len: [ 0, 255 ],
       },
     },
     application_requirement: {
       type: DataTypes.STRING(65535),
       validate: {
-        len: [ 1, 10000 ],
+        len: [ 0, 10000 ],
       }
     },
     analysis_memo: DataTypes.STRING(65535),
@@ -40,25 +40,25 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        len: [ 1, 10000 ],
+        len: [ 0, 10000 ],
       }
     },
     selection_next_date: {
       type: DataTypes.STRING,
       validate: {
-        len: [ 1, 32 ],
+        len: [ 0, 10 ],
       },
     },
     selection_next_content: {
       type: DataTypes.STRING,
       validate: {
-        len: [ 1, 100 ],
+        len: [ 0, 100 ],
       },
     },
     selection_memo: {
       type: DataTypes.STRING(65535),
       validate: {
-        len: [ 1, 10000 ],
+        len: [ 0, 10000 ],
       },
     },
     user_id: {

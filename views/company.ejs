@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="/stylesheets/bootstrap.min.css">
   <link rel="stylesheet" href="/stylesheets/styles.min.css">
+  <link rel="stylesheet" href="/stylesheets/styles.css">
   </head>
 
 <body>
@@ -21,19 +22,24 @@
         <a href="/top">Topへ戻る</a>
       </h6>  
     </div>
+
     <div class="container" style="padding: 10px 0px;padding-top: 30px;">
+      <div class="error">{{ validation.c_name }}</div>
       <h2>
         <input type="text" v-model:value="c_name">
         <button type="button" class="btn btn-primary" @click='updateContent("c_name")' style="margin-left: 10px;">更新</button>
       </h2>
       <h6>(<a v-bind:href="url" target="_blank" rel="noopener noreferrer">HP</a>)</h6>
     </div>
+
     <div class="container" style="padding: 10px 0px;padding-top: 0px;">
+      <div class="error">{{ validation.url }}</div>
       <input type="text" v-model:value="url">
         <button type="button" class="btn btn-primary" @click='updateContent("url")' style="margin-left: 10px;">更新</button>
     </div>
 
     <div class="container" style="padding: 10px 0px;padding-top: 20px;">
+      <div class="error">{{ validation.application_requirement }}</div>
       <h4>募集内容
         <button type="button" class="btn btn-primary" @click='updateContent("application_requirement")' style="margin-left: 10px;">更新</button>
       </h4>
@@ -43,6 +49,7 @@
     </div>
 
     <div class="container" style="padding: 10px 0px;padding-top: 15px;">
+      <div class="error">{{ validation.analysis_memo }}</div>
       <h4>
         分析メモ 
         <button type="button" class="btn btn-primary" @click='updateContent("analysis_memo")' style="margin-left: 10px;">更新</button>
@@ -53,29 +60,33 @@
     </div>
 
     <div class="container" style="padding: 10px 0px;padding-top: 15px;">
-      <h4>選考状況：
-        <input type="text" v-model:value="selection_status">
+      <div class="error">{{ validation.selection_status }}</div>
+      <h6>選考状況：
+        <select v-model:value="selection_status">
+          <option value="00: ご縁なし（書類）">00: ご縁なし（書類）</option>
+          <option value="01:ご縁なし（面接）">01:ご縁なし（面接）</option>
+          <option value="10:書類提出済み">10:書類提出済み</option>
+          <option value="11:書類通過">11:書類通過</option>
+          <option value="20:面接（1次）通過">20:面接（1次）通過</option>
+          <option value="30:面接（2次）通過">30:面接（2次）通過</option>
+          <option value="40:面接（3次~）通過">40:面接（3次~）通過</option>
+          <option value="50:面接（内定）">50:面接（内定）</option>
+        </select>
         <button type="button" class="btn btn-primary" @click='updateContent("selection_status")' style="margin-left: 10px;">更新</button>
-      </h4>
-      <p>
-        (プルダウンにしたいけどとりあえずコピペしてください)<br>
-        00:ご縁なし（書類）  01:ご縁なし（1次面接）  02:ご縁なし（2次面接）  03:ご縁なし（3次面接~）<br>
-        10:書類提出済み 11:書類通過<br>
-        20:面接（1次）通過<br>
-        30:面接（2次）通過<br>
-        40:面接（3次~）通過<br>
-        50:面接（内定）</p>
+      </h6>
     </div>
 
     <div class="container" style="padding: 10px 0px;padding-top: 15px;">
+      <div class="error">{{ validation.selection_next_date }}</div>
       <h6>次回選考日（期日）：
-        <input type="text" v-model:value="selection_next_date">
+        <input type="date" v-model:value="selection_next_date">
         <button type="button" class="btn btn-primary" @click='updateContent("selection_next_date")'
           style="margin-left: 10px;">更新</button>
       </h6>
     </div>
 
     <div class="container" style="padding: 10px 0px;padding-top: 15px;">
+      <div class="error">{{ validation.selection_next_content }}</div>
       <h6>次回選考内容：
         <input type="text" v-model:value="selection_next_content">
         <button type="button" class="btn btn-primary" @click='updateContent("selection_next_content")'
@@ -84,6 +95,7 @@
     </div>
 
     <div class="container" style="padding: 10px 0px;padding-top: 15px;">
+      <div class="error">{{ validation.selection_memo }}</div>
       <h4>
         選考メモ
         <button type="button" class="btn btn-primary" @click='updateContent("selection_memo")' style="margin-left: 10px;">更新</button>
@@ -96,6 +108,7 @@
 
   <script src="../javascripts/jquery.min.js"></script>
   <script src="../javascripts/bootstrap.bundle.min.js"></script>
+  <script src="../javascripts/script.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
 
   <script>
@@ -111,6 +124,16 @@
         selection_next_date: `<%= comp.selection_next_date %>`,
         selection_next_content: `<%= comp.selection_next_content %>`,
         selection_memo: `<%= comp.selection_memo %>`,
+        validation:{
+          c_name:'',
+          url:'',
+          application_requirement:'',
+          analysis_memo:'',
+          selection_status:'',
+          selection_next_date:'',
+          selection_next_content:'',
+          selection_memo:''
+        }
       },
       methods: {
         updateContent: function (item) {
@@ -124,27 +147,131 @@
           // 更新内容の取得
           if(item == 'c_name'){
             content = this.c_name;
-          
+
+            // サニタイジング対象文字列のチェック
+            if(!checkSanityzeWord(content)){
+              this.validation.c_name = '半角「＜」「＞」「＆」「‘」は使えません'
+              throw 'c_name contain sanityze word';
+            }
+
+            // NULLチェック
+            if(!checkNull(content)){
+              this.validation.c_name = '企業名を入力してください';
+              throw 'c_name null';
+            };
+
+            // 文字長チェック
+            if(!checkLength(content,100)){
+              this.validation.c_name = '企業名は100文字以内で入力してください'
+              throw 'c_name length over';
+            }
+
           } else if(item == 'url'){
             content = this.url;
 
+            // サニタイジング対象文字列のチェック
+            if (!checkSanityzeWord(content)) {
+              this.validation.c_name = '半角「＜」「＞」「＆」「‘」は使えません'
+              throw 'url contain sanityze word';
+            }
+
+            // URLの形式チェック
+            if(!checkUrlFormat(content)){
+              
+              this.validation.url = '「http://」または「https://」の形式で入力してください ';
+              throw 'url format error';
+            }
+
+            // 文字長チェック
+            if (!checkLength(content, 255)) {
+              this.validation.c_name = 'URLは255文字以内で入力してください'
+              throw 'url length over';
+            }
+
           } else if (item == 'application_requirement') {
             content = this.application_requirement;
-          
+
+            // サニタイジング対象文字列のチェック
+            if (!checkSanityzeWord(content)) {
+              this.validation.application_requirement = '半角「＜」「＞」「＆」「‘」は使えません'
+              throw 'application_requirement contain sanityze word';
+            }
+
+            // 文字長チェック
+            if (!checkLength(content, 10000)) {
+              this.validation.application_requirement = '10,000文字以内で入力してください'
+              throw 'application_requirement length over';
+            }            
+
           } else if (item == 'analysis_memo') {
             content = this.analysis_memo;
 
+            // サニタイジング対象文字列のチェック
+            if (!checkSanityzeWord(content)) {
+              this.validation.analysis_memo = '半角「＜」「＞」「＆」「‘」は使えません'
+              throw 'analysis_memo contain sanityze word';
+            }
+
+            // 文字長チェック
+            if (!checkLength(content, 10000)) {
+              this.validation.analysis_memo = '10,000文字以内で入力してください'
+              throw 'analysis_memo length over';
+            }
+            
           } else if (item == 'selection_status') {
             content = this.selection_status
 
+            console.log(content);
+
+            // フォーマットチェック
+            if(!checkSelectionStatus(content)){
+              this.validation.selection_status = 'プルダウンから選択してください。'
+              throw 'selection_status format error';
+            }
+
           } else if (item == 'selection_next_date') {
             content = this.selection_next_date
+            console.log(content);
+            
+            // 日付のフォーマットチェック
+            if(!checkDateFormat(content)){
+
+              // NULLは許容する
+              if(checkNull(content)){
+                this.validation.selection_next_date = 'yyyy-mm-dd の形式で入力してください'
+                throw 'selection_next_content contain sanityze word';
+              }
+            }
           
           } else if (item == 'selection_next_content') {
             content = this.selection_next_content
-          
+
+            // サニタイジング対象文字列のチェック
+            if (!checkSanityzeWord(content)) {
+              this.validation.selection_memo = '半角「＜」「＞」「＆」「‘」は使えません'
+              throw 'selection_next_content contain sanityze word';
+            }
+
+            // 文字長チェック
+            if (!checkLength(content, 100)) {
+              this.validation.selection_memo = '100文字以内で入力してください'
+              throw 'selection_next_content length over';
+            }
+            
           } else if (item == 'selection_memo') {
             content = this.selection_memo
+
+            // サニタイジング対象文字列のチェック
+            if (!checkSanityzeWord(content)) {
+              this.validation.selection_memo = '半角「＜」「＞」「＆」「‘」は使えません'
+              throw 'selection_memo contain sanityze word';
+            }
+
+            // 文字長チェック
+            if (!checkLength(content, 10000)) {
+              this.validation.selection_memo = '10,000文字以内で入力してください'
+              throw 'selection_memo length over';
+            }
           }
 
           // APIへの更新リクエスト
@@ -173,6 +300,9 @@
 
             alert('update success.')            
             window.location.reload();
+            return;
+          })
+          .catch(err => {
             return;
           });
         }
