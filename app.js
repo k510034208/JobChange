@@ -7,7 +7,7 @@ var session = require('express-session');
 var passport = require('passport'), LocalStrategy = require('passport-local').Strategy;
 var flash = require('connect-flash');
 var helmet = require('helmet')
-const csrf = require('csurf');
+var favicon = require('serve-favicon');
 
 var tools = require('./modules/tools')
 var db = require('./models/index');
@@ -30,6 +30,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(favicon(path.join(__dirname,'public','images','favicon.ico')));
 app.use(flash());
 app.use(helmet({
   contentSecurityPolicy: false,
