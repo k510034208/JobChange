@@ -38,7 +38,7 @@ app.use(helmet({
 
 var session_opt;
 
-if (process.env.NODE_ENV == 'procuction') {
+if (process.env.NODE_ENV == 'production') {
   var session_opt = {
     secret: 'seccone',
     resave: false,
