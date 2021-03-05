@@ -24,24 +24,26 @@
 
     <div class="container" style="padding: 10px 0px;padding-top: 30px;">
       <div class="error">{{ validation.c_name }}</div>
-      <h2>
-        <input type="text" v-model:value="c_name">
+      <h5>
+        <input type="text" v-model:value="c_name" style="width: 50%;">
         <button type="button" class="btn btn-primary" @click='updateContent("c_name")' style="margin-left: 10px;">更新</button>
-      </h2>
-      <h6>(<a v-bind:href="url" target="_blank" rel="noopener noreferrer">HP</a>)</h6>
+      </h5>
     </div>
 
     <div class="container" style="padding: 10px 0px;padding-top: 0px;">
       <div class="error">{{ validation.url }}</div>
-      <input type="text" v-model:value="url">
+      <h5>
+        <input type="text" v-model:value="url" style="width: 50%;">
+        (<a v-bind:href="url" target="_blank" rel="noopener noreferrer">HP</a>)
         <button type="button" class="btn btn-primary" @click='updateContent("url")' style="margin-left: 10px;">更新</button>
+      </h5>
     </div>
 
     <div class="container" style="padding: 10px 0px;padding-top: 20px;">
       <div class="error">{{ validation.application_requirement }}</div>
-      <h4>募集内容
+      <h5>募集内容
         <button type="button" class="btn btn-primary" @click='updateContent("application_requirement")' style="margin-left: 10px;">更新</button>
-      </h4>
+      </h5>
       <div style="padding: 0px 10px;">
         <textarea rows="10" v-model:value="application_requirement" style="width: 90%;"></textarea>
       </div>
@@ -49,10 +51,10 @@
 
     <div class="container" style="padding: 10px 0px;padding-top: 15px;">
       <div class="error">{{ validation.analysis_memo }}</div>
-      <h4>
+      <h5>
         分析メモ 
         <button type="button" class="btn btn-primary" @click='updateContent("analysis_memo")' style="margin-left: 10px;">更新</button>
-      </h4>
+      </h5>
       <div style="padding: 10px 10px;">
         <textarea rows="10" v-model:value="analysis_memo" style="width: 90%;"></textarea>
       </div>
@@ -102,10 +104,10 @@
 
     <div class="container" style="padding: 10px 0px;padding-top: 15px;">
       <div class="error">{{ validation.selection_memo }}</div>
-      <h4>
+      <h5>
         選考メモ
         <button type="button" class="btn btn-primary" @click='updateContent("selection_memo")' style="margin-left: 10px;">更新</button>
-      </h4>
+      </h5>
       <div style="padding: 10px 10px;">
         <textarea rows="10" style="width: 90%;" v-model:value="selection_memo"></textarea>
       </div>

@@ -22,11 +22,11 @@
         <table class="table">
           <thead>
             <tr>
-              <th style="width: 40%;">企業名</th>
-              <th style="width: 20%;">
-                選考状況
-              </th>
-              <th style="width: 10%;">削除</th>
+              <th style="width: 25%;">企業名</th>
+              <th style="width: 15%;">選考状況</th>
+              <th style="width: 15%;">次回の選考日程</th>
+              <th style="width: 15%;">次回の選考内容</th>
+              <th style="width: 10%;"></th>
             </tr>
           </thead>
           <tbody>
@@ -36,6 +36,8 @@
             <tr>
               <td><a href="/company?id=<%=comp.id%>"><%= comp.c_name %></a></td>
               <td><%= comp.selection_status %> </td>
+              <td><%= comp.selection_next_date %> </td>
+              <td><%= comp.selection_next_content %> </td>
               <td><button type="button" class="btn btn-primary" @click="deleteCompany('<%= comp.id %>')" >削除</button></td>
             </tr>
           <% } %> 
