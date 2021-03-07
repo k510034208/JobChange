@@ -4,10 +4,6 @@ var db = require('../models/index');
 var passport = require('passport'), LocalStrategy = require('passport-local').Strategy;
 var tools = require('../modules/tools');
 
-//CSRFミドルウェアを生成する
-var csrf = require('csrf');
-var tokens = new csrf();
-
 /* GET home page. 
  */
 router.get('/', async function (req, res, next) {
@@ -36,11 +32,11 @@ router.get('/login', async function (req, res, next) {
 router.post('/login', async function (req, res, next) {
 
   // CSRF対策
-  if (!tools.checkCsrf(req)) {
+  if (!tools.checkCsrfToken(req)) {
     return next("err"); 
   }
 
-  // 不正アクセス対策
+  // 不正アクセス対策 パスワード誤入力時のアカウントロック
   try {
     var user = await db.User.findOne({
       where: {
@@ -68,6 +64,7 @@ router.post('/login', async function (req, res, next) {
     return;
   }
 
+  // ID/PW認証
   passport.authenticate('local', async function (err, user, info) {
     
     if (err) { return next(err); }

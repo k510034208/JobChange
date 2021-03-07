@@ -8,7 +8,7 @@ var router = express.Router();
 router.post('/', async function (req, res, next) {
 
   // ログインチェック
-  if (!tools.checkLoginstatus(req)) {
+  if (!tools.checkIsLogin(req)) {
 
     // エラーレスポンス
     responseCreateApi(res, 'error', '')
@@ -16,7 +16,7 @@ router.post('/', async function (req, res, next) {
   }
 
   // CSRF対策
-  if (!tools.checkCsrf(req)) {
+  if (!tools.checkCsrfToken(req)) {
     // エラーレスポンス
     responseCreateApi(res, 'error', '')
     return;
@@ -82,7 +82,7 @@ router.delete('/', async function (req, res, next) {
   var comp_id = req.body.comp_id;
 
   // ログインチェック・所属チェック
-  if (!tools.checkLoginstatus(req) || !tools.checkUserid(req,comp_id)) {
+  if (!tools.checkIsLogin(req) || !tools.checkJoinUserId(req,comp_id)) {
 
     // エラーレスポンス
     responseDeleteApi(res, 'error', comp_id)
@@ -90,7 +90,7 @@ router.delete('/', async function (req, res, next) {
   }
 
   // CSRF対策
-  if (!tools.checkCsrf(req)) {
+  if (!tools.checkCsrfToken(req)) {
     // エラーレスポンス
     responseDeleteApi(res, 'error', comp_id)
     return;
@@ -127,29 +127,28 @@ router.delete('/', async function (req, res, next) {
 /* UPDATE /api/vX/company */
 router.put('/', async function (req, res, next) {
 
-  if (!tools.sanitizeString(req.body)) {
-    // エラーレスポンス
-    responseUpdateApi(res, 'error', '', '');
-    return;
-  }
-
   // パラメータの受け取り
   var comp_id = req.body.comp_id;
   var content = req.body.content;
   var item = req.body.item;
 
+  if (!tools.sanitizeString(req.body)) {
+    // エラーレスポンス
+    responseUpdateApi(res, 'error', comp_id, '', '');
+    return;
+  }
   // ログインチェック・所属チェック
-  if (!tools.checkLoginstatus(req) || !tools.checkUserid(req,comp_id)) {
+  if (!tools.checkIsLogin(req) || !tools.checkJoinUserId(req,comp_id)) {
 
     // エラーレスポンス
-    responseUpdateApi(res, 'error', content, item);
+    responseUpdateApi(res, 'error', comp_id, content, item);
     return;
   }
 
   // CSRF対策
-  if (!tools.checkCsrf(req)) {
+  if (!tools.checkCsrfToken(req)) {
     // エラーレスポンス
-    responseUpdateApi(res, 'error', content, item);
+    responseUpdateApi(res, 'error', comp_id, content, item);
     return;
   }
 
@@ -269,40 +268,58 @@ router.put('/', async function (req, res, next) {
 
     console.log(err);
 
-    responseUpdateApi(res, 'error', content, item);
+    responseUpdateApi(res, 'error', comp_id, content, item);
     return;
   }
 
   if (!comp) {
-    responseUpdateApi(res, 'error', content, item);
+    responseUpdateApi(res, 'error', comp_id, content, item);
     return;
   }
 
   // 正常レスポンス
-  responseUpdateApi(res,'success', content, item);
+  responseUpdateApi(res,'success', comp_id, content, item);
 });
 
 
-// CREATE APIのレスポンス用の関数
-function responseCreateApi(res, result, comp_id) {
+/*
+ * CREATE APIのレスポンス用の関数
+ * @param  res レスポンス
+ * @paam  result_result APIレスポンスするresult
+ * @param comp_id 企業ID  
+ */ 
+function responseCreateApi(res, res_result, comp_id) {
+  res.json({
+    result: res_result,
+    comp_id:comp_id
+  })
+}
+
+/*
+ * DELETE APIのレスポンス用の関数
+ * @param  res レスポンス
+ * @paam  result_result APIレスポンスするresult
+ * @param comp_id 企業ID  
+ */ 
+function responseDeleteApi (res, result, comp_id) {
   res.json({
     result: result,
     comp_id:comp_id
   })
 }
 
-// DELETE APIのレスポンス用の関数
-function responseDeleteApi(res, result, comp_id) {
+/*
+ * UPDATE APIのレスポンス用の関数
+ * @param  res レスポンス
+ * @paam  result_result APIレスポンスするresult
+ * @param comp_id 企業ID  
+ * @param content 更新するデータ
+ * @param item 更新する対象の項目  
+ */ 
+function responseUpdateApi(res, result, comp_id, content, item) {
   res.json({
     result: result,
-    comp_id:comp_id
-  })
-}
-
-// UPDATE APIのレスポンス用の関数
-function responseUpdateApi(res, result, content, item) {
-  res.json({
-    result: result,
+    comp_id:comp_id,
     content: content,
     item:item
   });

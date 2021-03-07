@@ -7,17 +7,17 @@ const tools = require('../modules/tools');
 router.get('/', async function (req, res, next) {
   
   // ログインチェック
-  if (!tools.checkLoginstatus(req)) {
+  if (!tools.checkIsLogin(req)) {
     res.redirect('/');
     return;
   }
 
   // CSRF対策
-  if (!tools.checkCsrf(req)) {
+  if (!tools.checkCsrfToken(req)) {
     return next("err"); 
   }
 
-  // 企業リストの取得
+  // ログインユーザの企業リストの取得
   var comp_list = await db.Company.findAll({
     where: {
       user_id : req.user,

@@ -12,18 +12,18 @@ router.get('/', async function (req, res, next) {
   var comp_id = req.query.id;
 
   // ログインチェック
-  if (!tools.checkLoginstatus(req)) {
+  if (!tools.checkIsLogin(req)) {
     res.redirect('/');
     return;
   }
 
   // CSRF対策
-  if (!tools.checkCsrf(req)) {
+  if (!tools.checkCsrfToken(req)) {
     return next("error"); 
   }
   
   // 所属チェック(権限がない場合はTOP画面に遷移させる)
-  if (!tools.checkUserid(req,comp_id)) {
+  if (!tools.checkJoinUserId(req,comp_id)) {
     res.redirect('/top');
     return;
   }

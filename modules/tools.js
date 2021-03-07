@@ -5,8 +5,11 @@ var tokens = new csrf();
 
 
 
-// ログインチェック
-exports.checkLoginstatus = function (req) {
+/*
+ * ログイン済みかチェックする関数
+ * @param  rer リクエスト
+ */ 
+exports.checkIsLogin = function (req) {
   
   if (!req.user) {
     return false;
@@ -14,13 +17,20 @@ exports.checkLoginstatus = function (req) {
   return true;
 }
 
-// パスワードのハッシュ化用の関数
-exports.hashSha256 = function (value) {
-  return crypto.createHash('sha256').update(value).digest('hex');
+/*
+ * ログイン済みかチェックする関数
+ * @param  raw_password  平文のパスワード
+ */ 
+exports.hashSha256 = function (raw_password) {
+  return crypto.createHash('sha256').update(raw_password).digest('hex');
 }
 
-// 権限チェック
-exports.checkUserid = async function (req, comp_id) {
+/*
+ * 操作しているユーザが指定の企業に属しているかチェックする関数
+ * @param req リクエスト
+ * @param comp_id 企業ID
+ */ 
+exports.checkJoinUserId = async function (req, comp_id) {
   
   try {
     var comp = await db.Company.findOne({
@@ -41,17 +51,19 @@ exports.checkUserid = async function (req, comp_id) {
   }
 }
 
-// サニタイジング文字列チェック
-// 「<」「>」「&」「"」「`」をエーラーとする
-exports.sanitizeString = function(stringObject){
+/*
+ * サニタイジング要の関数（<,>,&,`が含まれる場合falseを返却する）
+ * @param requestBodyObject リクエストのbody
+ */ 
+exports.sanitizeString = function(requestBodyObject){
 
-  if (typeof (stringObject) != 'object') {
+  if (typeof (requestBodyObject) != 'object') {
     return false;
   }
 
-  for (var key in stringObject) {
+  for (var key in requestBodyObject) {
   
-    var string = stringObject[ key ];
+    var string = requestBodyObject[ key ];
     if (string.indexOf('>')!=-1 || string.indexOf('<')!=-1 || string.indexOf('&')!=-1 || string.indexOf('`')!=-1) {
       return false;
     }
@@ -60,7 +72,11 @@ exports.sanitizeString = function(stringObject){
   return true;
 }
 
-// CSRFtoken 生成
+/*
+ * CSRF対策のためtokenを作成する関数
+ * @param req リクエスト
+ * @param res レスポンス
+ */ 
 exports.createCsrfToken = function (req, res) {
   var secret = tokens.secretSync();
   var token = tokens.create(secret);
@@ -73,13 +89,15 @@ exports.createCsrfToken = function (req, res) {
   return
 }
 
-// CSRFチェック処理
-exports.checkCsrf = function (req) {
+/*
+ * CSRF対策のためtokenをチェックする関数
+ * @param req リクエスト
+ */ 
+exports.checkCsrfToken = function (req) {
   
   var secret = req.session._csrf;
   var token = req.cookies._csrf;
 
-  console.log(tokens.verify(secret, token));
   // トークンチェックする
   if (!tokens.verify(secret, token)) {
     return false;
