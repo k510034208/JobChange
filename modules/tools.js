@@ -3,8 +3,6 @@ const crypto = require('crypto');
 var csrf = require('csrf');
 var tokens = new csrf();
 
-
-
 /*
  * ログイン済みかチェックする関数
  * @param  rer リクエスト

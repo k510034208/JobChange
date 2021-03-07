@@ -4,6 +4,9 @@ var tools = require('../../modules/tools');
 
 var router = express.Router();
 
+// 各APIはユーザがログインしている前提でリクエストされるものとする
+// ログインしていない場合はエラーとすること
+
 /* CREATE /api/vX/company */
 router.post('/', async function (req, res, next) {
 
@@ -29,7 +32,6 @@ router.post('/', async function (req, res, next) {
     responseCreateApi(res, 'error', '')
     return;
   }
-  
  
   var comp;
 
@@ -103,6 +105,13 @@ router.delete('/', async function (req, res, next) {
     return;
   }
 
+  // 削除対象の企業が操作ユーザのデータであるかチェックする
+  if (!tools.checkJoinUserId(req,comp_id)) {
+    // エラーレスポンス
+    responseDeleteApi(res, 'error', comp_id)
+    return;
+  }
+
   try {
     // DBトランザクション開始
     await db.sequelize.transaction(async (t) => {
@@ -149,6 +158,13 @@ router.put('/', async function (req, res, next) {
   if (!tools.checkCsrfToken(req)) {
     // エラーレスポンス
     responseUpdateApi(res, 'error', comp_id, content, item);
+    return;
+  }
+
+  // 更新対象の企業が操作ユーザのデータであるかチェックする
+  if (!tools.checkJoinUserId(req,comp_id)) {
+    // エラーレスポンス
+    responseDeleteApi(res, 'error', comp_id)
     return;
   }
 
