@@ -45,7 +45,7 @@ router.post('/', async function (req, res, next) {
           url: "https://example.com/",
           application_requirement: "募集要項の要約を記録する",
           analysis_memo: "企業分析内容を記録する",
-          selection_status: "未入力",
+          selection_status: "10:書類提出済み",
           selection_next_date: "次回選考日",
           selection_next_content: "次回選考内容",
           selection_memo: "選考に関するメモ、戦略",
